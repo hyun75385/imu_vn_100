@@ -7,7 +7,7 @@
     <arg name="baudrate" default="921600"/>
     <arg name="imu_rate" default="100"/>
     <!-- heading mode : 0 : abolute mode , 1:relative mode, 2: indoor mode"-->
-    <arg name="heading_mode" default="2"/>
+    <arg name="heading_mode" default="0"/>
 
     <!-- Sync out settings -->
     <!-- to disable this just set it to < 0 -->
