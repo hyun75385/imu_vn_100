@@ -141,6 +141,8 @@ class ImuVn100 {
   bool enable_temp_ = true;
   bool binary_output_ = true;
 
+  int heading_mode_ = 0;
+
   SyncInfo sync_info_;
   ros::Duration imu_timestamp_offset_;
 

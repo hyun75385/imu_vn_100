@@ -121,6 +121,8 @@ void ImuVn100::LoadParameters() {
 
   pnh_.param("binary_output", binary_output_, true);
 
+  pnh_.param("heading_mode", heading_mode_, 0);
+
   FixImuRate();
   sync_info_.FixSyncRate();
 }
@@ -157,6 +159,11 @@ void ImuVn100::Initialize() {
   ROS_INFO("Set serial baudrate to %d", baudrate_);
   VnEnsure(vn100_setSerialBaudRate(&imu_, baudrate_, true));
 
+  uint8_t heading_mode_int = heading_mode_;
+  ROS_INFO("Set heading mode to %d", heading_mode_int);
+  VnEnsure(vn100_setVpeControl(&imu_,1,heading_mode_int,1,1,true));
+  
+
   ROS_DEBUG("Disconnecting the device");
   vn100_disconnect(&imu_);
   ros::Duration(0.5).sleep();
@@ -177,6 +184,7 @@ void ImuVn100::Initialize() {
   int hardware_revision = 0;
   char serial_number_buffer[30] = {0};
   char firmware_version_buffer[30] = {0};
+  uint8_t heading_mode = 0,a,b,c;
 
   VnEnsure(vn100_getModelNumber(&imu_, model_number_buffer, 30));
   ROS_INFO("Model number: %s", model_number_buffer);
@@ -186,6 +194,23 @@ void ImuVn100::Initialize() {
   ROS_INFO("Serial number: %s", serial_number_buffer);
   VnEnsure(vn100_getFirmwareVersion(&imu_, firmware_version_buffer, 30));
   ROS_INFO("Firmware version: %s", firmware_version_buffer);
+  
+  // 
+  VnEnsure(vn100_getVpeControl(&imu_,&a,&heading_mode,&b,&c));
+  switch( heading_mode ){
+    case 0:
+      ROS_INFO("Heading mode : Absolute Heading");
+      break;
+    case 1:
+      ROS_INFO("Heading mode : Relative Heading");
+      break;
+    case 2:
+      ROS_INFO("Heading mode : Indoor Heading");
+      break;
+  }
+
+
+
 
   if (sync_info_.SyncEnabled()) {
     ROS_INFO("Set Synchronization Control Register (id:32).");
@@ -220,7 +245,7 @@ void ImuVn100::Stream(bool async) {
     if (binary_output_) {
       // Set the binary output data type and data rate
       VnEnsure(vn100_setBinaryOutput1Configuration(
-          &imu_, BINARY_ASYNC_MODE_SERIAL_2, kBaseImuRate / imu_rate_,
+          &imu_, BINARY_ASYNC_MODE_SERIAL_1, kBaseImuRate / imu_rate_,
           BG1_QTN | BG1_IMU | BG1_MAG_PRES | BG1_SYNC_IN_CNT | BG1_TIME_SYNC_IN,
           BG3_NONE, BG5_NONE, true));
     } else {

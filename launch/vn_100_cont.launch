@@ -6,6 +6,8 @@
     <arg name="frame_id" default="$(arg imu)"/>
     <arg name="baudrate" default="921600"/>
     <arg name="imu_rate" default="100"/>
+    <!-- heading mode : 0 : abolute mode , 1:relative mode, 2: indoor mode"-->
+    <arg name="heading_mode" default="2"/>
 
     <!-- Sync out settings -->
     <!-- to disable this just set it to < 0 -->
@@ -30,5 +32,6 @@
         <param name="enable_temp" type="bool" value="$(arg enable_temp)"/>
         <param name="sync_rate" type="int" value="$(arg sync_rate)"/>
         <param name="sync_pulse_width_us" type="int" value="$(arg sync_pulse_width_us)"/>
+        <param name="heading_mode" type="int" value="$(arg heading_mode)"/>
     </node>
 </launch>
